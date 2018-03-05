@@ -1,0 +1,78 @@
+---
+title: "dataset preprocessing"
+author: "Haiwen Chen, Jiadi Wang"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+```{r}
+library(R.matlab)
+f=readMat('B0005.mat')#put this .Rmd file and the dataset file .mat in same folder
+data=f$B0005
+#data[,,1]$cycle
+#dim(data[,,1]$cycle)
+discharge1=data[,,1]$cycle[,,2]$data
+#dim(discharge1)
+#discharge1[1,,]$
+
+time1=discharge1[6,,]$Time[1,]
+voltage1=discharge1[1,,]$Voltage.measured[1,]
+#plot(time1,voltage1)
+
+maxline=0
+count=0
+for (i in 1:616){
+  if (data[,,1]$cycle[,,i]$type=="discharge") {
+    length=dim(data[,,1]$cycle[,,i]$data[,,1]$Voltage.measured)[2]
+    count=count+1
+    if (length>maxline) maxline=length
+  }
+}
+#calculate the maximum length of every discharge row
+
+TimeMatrix=matrix(NA,count,maxline)
+VoltageMatrix=matrix(NA,count,maxline)
+row=0
+for (i in 1:616) {
+  if (data[,,1]$cycle[,,i]$type=="discharge") {
+    row=row+1
+    voltage=data[,,1]$cycle[,,i]$data[,,1]$Voltage.measured
+    length=dim(voltage)[2]
+    time=data[,,1]$cycle[,,i]$data[,,1]$Time
+    VoltageMatrix[row,1:length]=voltage[1,]
+    TimeMatrix[row,1:length]=time[1,]
+  }
+}
+#construct matrix for time and voltage seperately
+#for each matrix, M[i,] means the corresponding data(time or voltage) in ith discharge
+
+
+```
+
+```{r}
+library(RColorBrewer)
+ i=10
+ plot(TimeMatrix[i,], VoltageMatrix[i,], col=rainbow(16)[1], xlab="Time", ylab="Voltage(V)")
+ lines(TimeMatrix[20,], VoltageMatrix[20,],col=rainbow(16)[2] )
+ lines(TimeMatrix[30,], VoltageMatrix[30,],col=rainbow(16)[3] )
+ lines(TimeMatrix[40,], VoltageMatrix[40,],col=rainbow(16)[4] )
+ lines(TimeMatrix[50,], VoltageMatrix[50,],col=rainbow(16)[5] )
+ lines(TimeMatrix[60,], VoltageMatrix[60,],col=rainbow(16)[6] )
+ lines(TimeMatrix[70,], VoltageMatrix[70,],col=rainbow(16)[7] )
+ lines(TimeMatrix[80,], VoltageMatrix[80,],col=rainbow(16)[8] )
+ lines(TimeMatrix[90,], VoltageMatrix[90,],col=rainbow(16)[9] )
+ lines(TimeMatrix[100,], VoltageMatrix[100,],col=rainbow(16)[10] )
+ lines(TimeMatrix[110,], VoltageMatrix[110,],col=rainbow(16)[11] )
+ lines(TimeMatrix[120,], VoltageMatrix[120,],col=rainbow(16)[12] )
+ lines(TimeMatrix[130,], VoltageMatrix[130,],col=rainbow(16)[13] )
+ lines(TimeMatrix[140,], VoltageMatrix[140,],col=rainbow(16)[14] )
+ lines(TimeMatrix[150,], VoltageMatrix[150,],col=rainbow(16)[15] )
+ lines(TimeMatrix[160,], VoltageMatrix[160,],col=rainbow(16)[16] )
+ par(mai=c(5,4,4,10),pty='s');    #?????????????????????????????????
+ #legend(x=3600,y=4.5,legend=paste(rep("Cycle",16),seq(10,160,10)),col=rainbow(16),lwd=1, xpd=TRUE)
+ 
+```
+
